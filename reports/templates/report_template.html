@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      margin: 20px;
+      padding: 0;
+      font-size: 12px;
+      color: #222;
+      background-color: #fdfdfd;
+    }
+
+    /* HEADER */
+    .header {
+      display:flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 3px solid #0056b3;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+
+    .school-info h1 {
+      font-size: 20px;
+      margin: 0;
+      color: #0056b3;
+    }
+
+    .school-info h2 {
+      margin: 5px 0;
+      font-size: 14px;
+      color: #333;
+      letter-spacing: 1px;
+    }
+
+    .school-info p {
+      margin: 2px 0;
+      font-size: 11px;
+      color: #555;
+    }
+
+    .school-logo img {
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
+    }
+
+    /* STUDENT DETAILS */
+    .student-info {
+      background: #eef4ff;
+      border-left: 4px solid #0056b3;
+      padding: 10px 15px;
+      margin-bottom: 15px;
+    }
+
+    .student-info p {
+      margin: 4px 0;
+      font-size: 11.5px;
+    }
+
+    .student-info strong {
+      color: #003d80;
+    }
+
+    /* MARKS TABLE */
+    .marks-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 12px;
+      font-size: 11px;
+    }
+
+    .marks-table th {
+      background-color: #0056b3;
+      color: #fff;
+      text-align: left;
+      padding: 6px;
+      font-weight: normal;
+    }
+
+    .marks-table td {
+      border: 1px solid #ddd;
+      padding: 6px;
+    }
+
+    .marks-table tr:nth-child(even) {
+      background-color: #f5f8ff;
+    }
+
+    /* SUMMARY */
+    .summary {
+      background-color: #f2f6fa;
+      border: 1px solid #cce0ff;
+      border-left: 4px solid #0056b3;
+      padding: 10px 15px;
+      margin-top: 10px;
+      font-size: 11.5px;
+    }
+
+    .summary p {
+      margin: 4px 0;
+    }
+
+    .summary strong {
+      color: #003d80;
+    }
+
+    /* SIGNATURES */
+    .signatures {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 25px;
+      font-size: 11px;
+    }
+
+    .signature-line {
+      width: 200px;
+      border-top: 1px solid #000;
+      margin-bottom: 3px;
+    }
+
+    /* FOOTER */
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 10px;
+      color: #666;
+    }
+
+    /* ONE-PAGE OPTIMIZATION */
+    @page {
+      margin: 1.2cm;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <div class="header">
+    <div class="school-info">
+      <h1>{{ school.name }}  OFFICIAL REPORT CARD  </h1>
+      
+      <p>{{ school.address|linebreaksbr }}</p>
+      <p>Tel: {{ school.phone }} | Email: {{ school.email }}</p>
+    </div>
+    <div class="school-logo">
+      {% if school.logo %}
+        <img src="{{ school.logo.url }}" alt="School Logo">
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Student Information -->
+  <div class="student-info">
+    <p><strong>Academic Year:</strong> {{ term.year }}</p>
+    <p><strong>Term:</strong> {{ term.name }}</p>
+    <p><strong>Student Name:</strong> {{ student.first_name }} {{ student.last_name }}</p>
+    <p><strong>Student ID:</strong> {{ student.student_id }}</p>
+    <p><strong>Class:</strong> {{ student.classroom.name }}{% if student.classroom.stream %} - {{ student.classroom.stream }}{% endif %}</p>
+    {% if student.date_of_birth %}
+    <p><strong>Date of Birth:</strong> {{ student.date_of_birth }}</p>
+    {% endif %}
+    {% if student.gender %}
+    <p><strong>Gender:</strong> {{ student.gender }}</p>
+    {% endif %}
+  </div>
+
+  <!-- Marks Table -->
+  <table class="marks-table">
+    <thead>
+      <tr>
+        <th>Subject</th>
+        <th>Score</th>
+        <th>Grade</th>
+        <th>Remarks</th>
+        <th>Teacher</th>
+        
+      </tr>
+    </thead>
+    <tbody>
+      {% for subject in report.subjects %}
+      <tr>
+        <td>{{ subject.subject }}</td>
+        <td>{{ subject.score }}</td>
+        <td><strong>{{ subject.grade }}</strong></td>
+        <td>
+          {% if subject.grade == 'A' %}Excellent
+          {% elif subject.grade == 'B' %}Good
+          {% elif subject.grade == 'C' %}Average
+          {% elif subject.grade == 'D' %}Below Average
+          {% else %}Needs Improvement
+          {% endif %}
+          
+        </td>
+        <td>{{ subject.teacher }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Summary Section -->
+  <div class="summary">
+    <p><strong>Total Marks:</strong> {{ report.total }}</p>
+    <p><strong>Average:</strong> {{ report.average|floatformat:2 }}</p>
+    <p><strong>Overall Grade:</strong> {{ report.overall_grade }}</p>
+    <p><strong>Remarks:</strong>
+      {% if report.overall_grade == 'A' %}Outstanding Performance
+      {% elif report.overall_grade == 'B' %}Good Performance
+      {% elif report.overall_grade == 'C' %}Satisfactory Performance
+      {% elif report.overall_grade == 'D' %}Needs Improvement
+      {% else %}Unsatisfactory Performance
+      {% endif %}
+    </p>
+  </div>
+
+  <!-- Signatures -->
+  <div class="signatures">
+    <div>
+      <div class="signature-line"></div>
+      <p>Class Teacher's Signature:_______________________________</p>
+    </div>
+    <div>
+      <div class="signature-line"></div>
+      <p>Head Teacher's Signature:_____________________________</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p>Generated on {% now "F j, Y" %} | {{ school.name }} Report System</p>
+  </div>
+</body>
+</html>

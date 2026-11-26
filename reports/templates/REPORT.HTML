@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .school-info {
+            flex: 1;
+        }
+        .school-logo {
+            width: 80px;
+            height: 80px;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .logo-placeholder {
+            color: #666;
+            font-size: 10px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 18px;
+            color: #333;
+        }
+        .header h2 {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #666;
+        }
+        .student-section {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+        }
+        .student-info {
+            flex: 1;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+        }
+        .student-photo {
+            width: 100px;
+            height: 120px;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 20px;
+        }
+        .photo-placeholder {
+            color: #666;
+            font-size: 10px;
+            text-align: center;
+        }
+        .student-info p {
+            margin: 5px 0;
+        }
+        .marks-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            page-break-inside: avoid;
+        }
+        .marks-table th, .marks-table td {
+            border: 1px solid #000;
+            padding: 6px;
+            text-align: left;
+            font-size: 10px;
+        }
+        .marks-table th {
+            background-color: #e0e0e0;
+            font-weight: bold;
+        }
+        .summary {
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+        }
+        .summary p {
+            margin: 5px 0;
+            font-weight: bold;
+        }
+        .signatures {
+            margin-top: 40px;
+            page-break-inside: avoid;
+        }
+        .signature-box {
+            width: 45%;
+            display: inline-block;
+            vertical-align: top;
+        }
+        .signature-line {
+            width: 200px;
+            border-top: 1px solid #000;
+            margin: 30px 0 5px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 10px;
+            color: #666;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .bold {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with School Logo -->
+    <div class="header">
+        <div class="school-info">
+            <h1>{{ school.name }}</h1>
+            <h2>OFFICIAL REPORT CARD</h2>
+            <p>{{ school.address|linebreaksbr }}</p>
+            <p>Tel: {{ school.phone }} | Email: {{ school.email }}</p>
+        </div>
+        <div class="school-logo">
+            {% if school.logo %}
+            <img src="{{ school.logo.url }}" alt="School Logo" style="max-width: 70px; max-height: 70px;">
+            {% else %}
+            <div class="logo-placeholder">
+                SCHOOL<br>LOGO
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Student Information and Photo -->
+    <div class="student-section">
+        <div class="student-info">
+            <p><strong>Academic Year:</strong> {{ term.year }}</p>
+            <p><strong>Term:</strong> {{ term.name }}</p>
+            <p><strong>Student Name:</strong> {{ student.first_name }} {{ student.last_name }}</p>
+            <p><strong>Student ID:</strong> {{ student.student_id }}</p>
+            <p><strong>Class:</strong> {{ student.classroom.name }}{% if student.classroom.stream %} - {{ student.classroom.stream }}{% endif %}</p>
+            {% if student.date_of_birth %}
+            <p><strong>Date of Birth:</strong> {{ student.date_of_birth }}</p>
+            {% endif %}
+            {% if student.gender %}
+            <p><strong>Gender:</strong> {{ student.gender }}</p>
+            {% endif %}
+        </div>
+        <div class="student-photo">
+            {% if student.photo %}
+            <img src="{{ student.photo.url }}" alt="Student Photo" style="max-width: 90px; max-height: 110px;">
+            {% else %}
+            <div class="photo-placeholder">
+                STUDENT<br>PHOTO
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Marks Table -->
+    <table class="marks-table">
+        <thead>
+            <tr>
+                <th>Subject</th>
+                <th>Score</th>
+                <th>Grade</th>
+                <th>Remarks</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for subject in report.subjects %}
+            <tr>
+                <td>{{ subject.subject }}</td>
+                <td>{{ subject.score }}</td>
+                <td><strong>{{ subject.grade }}</strong></td>
+                <td>
+                    {% if subject.grade == 'A' %}Excellent
+                    {% elif subject.grade == 'B' %}Good
+                    {% elif subject.grade == 'C' %}Average
+                    {% elif subject.grade == 'D' %}Below Average
+                    {% else %}Needs Improvement
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <!-- Summary Section -->
+    <div class="summary">
+        <p>Total Marks: {{ report.total }}</p>
+        <p>Average: {{ report.average|floatformat:2 }}</p>
+        <p>Overall Grade: <strong>{{ report.overall_grade }}</strong></p>
+        <p>Overall Remarks: 
+            {% if report.overall_grade == 'A' %}Outstanding Performance
+            {% elif report.overall_grade == 'B' %}Good Performance
+            {% elif report.overall_grade == 'C' %}Satisfactory Performance
+            {% elif report.overall_grade == 'D' %}Needs Improvement
+            {% else %}Unsatisfactory Performance
+            {% endif %}
+        </p>
+    </div>
+    
+    <!-- Signatures Section -->
+    <div class="signatures">
+        <div class="signature-box">
+            <div class="signature-line"></div>
+            <p>Class Teacher's Signature</p>
+            <p>Date: ___________________</p>
+        </div>
+        
+        <div class="signature-box" style="float: right;">
+            <div class="signature-line"></div>
+            <p>Head Teacher's Signature</p>
+            <p>Date: ___________________</p>
+        </div>
+        <div style="clear: both;"></div>
+    </div>
+    
+    <!-- Footer -->
+    <div class="footer">
+        <p>Generated on {% now "F j, Y" %} | {{ school.name }} Report System</p>
+    </div>
+</body>
+</html>
